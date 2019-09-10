@@ -7,9 +7,11 @@ from . import views
 # this is the way for register viewset default routes
 router = DefaultRouter()
 router.register('hello-viewset', views.HelloViewSet, base_name='hello-viewset')
+router.register('profile', views.UserProfileViewSet)
 
 
 urlpatterns = [
   path('hello-apiview/', views.HelloApiView.as_view()),
-  path('', include(router.urls))
+  path('', include(router.urls)),
+  path('login/', views.LoginAPIView.as_view())
 ]
