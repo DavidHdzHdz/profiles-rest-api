@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'profiles'
+    'profiles.apps.ProfilesConfig'
 ]
 
 MIDDLEWARE = [
@@ -121,3 +121,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Default model used for authentication
+
+AUTH_USER_MODEL = 'profiles.UserProfile'
