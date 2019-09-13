@@ -11,3 +11,16 @@ class UpdateOwnProfile(permissions.BasePermission):
             return True
 
         return object.id == request.user.id
+
+
+class UpdateOwnFeedStatus(permissions.BasePermission):
+    """ Allow users edit own feed status only """
+
+    def has_object_permission(self, request, view, object):
+        """ check if user is trying to edit his own status """
+        if request.method in permissions.SAFE_METHODS:
+            # Read permissions are allowed to any request,
+            # so we'll always allow GET, HEAD or OPTIONS requests.
+            return True
+
+        return object.user_profile == request.user

@@ -4,11 +4,13 @@ from rest_framework import status, viewsets, filters
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from . import serializers
 from . import models
 from . import permissions
 
+import requests
 
 
 class HelloApiView(APIView):
@@ -103,6 +105,33 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'email',)
 
+    def create(self, request, *args, **kwargs):
+        """ override create method of api view for return token when an user is created """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        email, password = [serializer.validated_data[k] for k in ('email', 'password')]
+        # change path by an enviroment path var
+        r = requests.post('http://localhost:8000/api/login/', data={'username': email, 'password': password})
+        if r.status_code == 200:
+            return Response({'user': serializer.data, 'token': r.json()['token']}, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({'user': serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
+
+
 class LoginAPIView(ObtainAuthToken):
     """ Handle loging, get email and password and returns token """
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class ProfileFeedItemViewSet(viewsets.ModelViewSet):
+    """ Set of views for profile feed item objects """
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset = models.ProfileFeedItem.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.UpdateOwnFeedStatus, IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        """ this method is executed after method crete for doing aditional acrtions """
+        serializer.save(user_profile=self.request.user)
