@@ -115,8 +115,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         email, password = [serializer.validated_data[k] for k in ('email', 'password')]
         # change path by an enviroment path var, ** fix enviroment var **
-        # url = f'{ENVIRONMENT}/api/login/'
-        url = 'http://ec2-54-187-205-38.us-west-2.compute.amazonaws.com/api/login/'
+        url = f'{ENVIRONMENT}/api/login/'
+        # url = 'http://ec2-54-187-205-38.us-west-2.compute.amazonaws.com/api/login/'
         r = requests.post(url, data={'username': email, 'password': password})
         if r.status_code == 200:
             return Response({'user': serializer.data, 'token': r.json()['token']}, status=status.HTTP_201_CREATED, headers=headers)
