@@ -117,7 +117,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         # change path by an enviroment path var, ** fix enviroment var **
         url = f'{ENVIRONMENT}/api/login/'
         # url = 'http://ec2-54-187-205-38.us-west-2.compute.amazonaws.com/api/login/'
-        r = requests.post(url, data={'username': email, 'password': password})
+        r = requests.post(url, data={'username': email, 'password': password}, headers=headers)
         if r.status_code == 200:
             return Response({'user': serializer.data, 'token': r.json()['token']}, status=status.HTTP_201_CREATED, headers=headers)
         else:
