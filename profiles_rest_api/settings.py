@@ -133,3 +133,6 @@ AUTH_USER_MODEL = 'profiles.UserProfile'
 # static files directory path
 
 STATIC_ROOT = 'static/'
+
+# create var enviroment if we need it for make internal requests
+ENVIRONMENT = os.environ.get('ENVIRONMENT', 'http://localhost:8000')

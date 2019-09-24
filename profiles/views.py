@@ -9,8 +9,10 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from . import serializers
 from . import models
 from . import permissions
+from profiles_rest_api.settings import ENVIRONMENT
 
 import requests
+import os
 
 
 class HelloApiView(APIView):
@@ -113,7 +115,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         email, password = [serializer.validated_data[k] for k in ('email', 'password')]
         # change path by an enviroment path var
-        r = requests.post('http://localhost:8000/api/login/', data={'username': email, 'password': password})
+        url = f'{ENVIRONMENT}/api/login/'
+        r = requests.post(url, data={'username': email, 'password': password})
         if r.status_code == 200:
             return Response({'user': serializer.data, 'token': r.json()['token']}, status=status.HTTP_201_CREATED, headers=headers)
         else:
